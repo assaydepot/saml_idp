@@ -55,9 +55,24 @@ module SamlIdp
         # check cert matches registered idp cert
         fingerprint = fingerprint_cert(cert)
         sha1_fingerprint = fingerprint_cert_sha1(cert)
-        plain_idp_cert_fingerprint = idp_cert_fingerprint.gsub(/[^a-zA-Z0-9]/,"").downcase
 
-        if fingerprint != plain_idp_cert_fingerprint && sha1_fingerprint != plain_idp_cert_fingerprint
+        fingerprint_validation = false
+
+        if idp_cert_fingerprint.is_a?(Array)
+          idp_cert_fingerprint.each do |idp_cert_fingerprint_single|
+            plain_idp_cert_fingerprint = idp_cert_fingerprint_single.gsub(/[^a-zA-Z0-9]/,"").downcase
+            if fingerprint == plain_idp_cert_fingerprint || sha1_fingerprint != plain_idp_cert_fingerprint
+              fingerprint_validation = true
+            end
+          end
+        else
+          plain_idp_cert_fingerprint = idp_cert_fingerprint.gsub(/[^a-zA-Z0-9]/,"").downcase
+          if fingerprint == plain_idp_cert_fingerprint || sha1_fingerprint != plain_idp_cert_fingerprint
+            fingerprint_validation = true
+          end
+        end
+
+        if fingerprint_validation == false
           return soft ? false : (raise ValidationError.new("Fingerprint mismatch"))
         end
 

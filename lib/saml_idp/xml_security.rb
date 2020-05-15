@@ -58,15 +58,8 @@ module SamlIdp
 
         fingerprint_validation = false
 
-        if idp_cert_fingerprint.is_a?(Array)
-          idp_cert_fingerprint.each do |idp_cert_fingerprint_single|
-            plain_idp_cert_fingerprint = idp_cert_fingerprint_single.gsub(/[^a-zA-Z0-9]/,"").downcase
-            if fingerprint == plain_idp_cert_fingerprint || sha1_fingerprint != plain_idp_cert_fingerprint
-              fingerprint_validation = true
-            end
-          end
-        else
-          plain_idp_cert_fingerprint = idp_cert_fingerprint.gsub(/[^a-zA-Z0-9]/,"").downcase
+        [idp_cert_fingerprint].flatten.each do |idp_cert_fingerprint_single|
+          plain_idp_cert_fingerprint = idp_cert_fingerprint_single.gsub(/[^a-zA-Z0-9]/,"").downcase
           if fingerprint == plain_idp_cert_fingerprint || sha1_fingerprint != plain_idp_cert_fingerprint
             fingerprint_validation = true
           end
